@@ -4,14 +4,7 @@
 #include <nlohmann/json.hpp>
 #include <fstream>
 
-// using namespace to make json easier
-using json = nlohmann::json;
 
-size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {
-    size_t totalSize = size * nmemb;
-    output->append((char*)contents, totalSize);
-    return totalSize;
-}
 
 std::string readApiKey() {
   std::ifstream file("secrets.txt");
