@@ -6,9 +6,6 @@
 
 #include "curl_handler.h"
 
-std::string BASE_URL;
-
-
 
 size_t Curl_Handler::WriteCallbackStatic(void* contents, size_t size, size_t nmemb, std::string* output, void* user_ptr) {
     return static_cast<Curl_Handler*>(user_ptr)->WriteCallback(contents, size, nmemb, output);
@@ -51,12 +48,15 @@ CURLcode Curl_Handler::init_curler(std::string BASE_URL) {
   const std::string API_KEY = readApiKey();
 
   if (!curl_handle) {
-    std::cout << "CURL init error";
+    throw std::runtime_error("CURL initialization error");
 
   }
 
   // Setup the URL
   curl_easy_setopt(curl_handle, CURLOPT_URL, BASE_URL.c_str());
+
+  // Debugging connection, REMOVE for prod
+  curl_easy_setopt(curl_handle, CURLOPT_VERBOSE, 1L);
 
   // Setup Headers 
   struct curl_slist* headers = nullptr;
@@ -71,6 +71,10 @@ CURLcode Curl_Handler::init_curler(std::string BASE_URL) {
 
   // perform the request 
   CURLcode res = curl_easy_perform(curl_handle);
+
+  // Clean up 
+  curl_slist_free_all(headers);
+
 
   return res;
 }
